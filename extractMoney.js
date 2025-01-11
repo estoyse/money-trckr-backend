@@ -24,7 +24,8 @@ const parseDateTime = dateStr => {
 
 const operationType = str => {
   if (str.includes("To'lov")) return "expense";
-  if (str.includes("Naqd")) return "transfer";
+  if (str.includes("Naqd pul yechish")) return "withdraw";
+  if (str.includes("Amaliyot")) return "transfer";
   return "income";
 };
 
