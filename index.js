@@ -33,7 +33,7 @@ async function handleMessage(event) {
   const message = event.message;
 
   if (
-    message.senderId.value == 856254490n ||
+    message.senderId.value !== 856254490n ||
     !/(To'lov|Naqd pul yechish|To'ldirish|Amaliyot)/.test(message.text)
   ) {
     return;
