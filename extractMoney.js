@@ -23,10 +23,10 @@ const parseDateTime = dateStr => {
 };
 
 const operationType = str => {
-  if (str.includes("To'lov")) return "expense";
-  if (str.includes("Naqd pul yechish")) return "withdraw";
-  if (str.includes("Amaliyot")) return "transfer";
-  return "income";
+  if (str.includes("To'lov")) return 0;
+  if (str.includes("Naqd pul yechish")) return 1;
+  if (str.includes("Amaliyot")) return 2;
+  return 3;
 };
 
 export function moneyTransferInfo(msg) {
@@ -37,6 +37,6 @@ export function moneyTransferInfo(msg) {
     type: operationType(transferType),
     amount: toNumber(amount),
     location: clearText(location),
-    date: parseDateTime(date),
+    transaction_date: parseDateTime(date),
   };
 }
