@@ -18,7 +18,7 @@ const apiId = +TELEGRAM_API_ID;
 const apiHash = TELEGRAM_API_HASH;
 const stringSession = new StringSession(TELEGRAM_STRING_SESSION);
 
-async function init() {
+async function initBot() {
   // Create the client
   const client = new TelegramClient(stringSession, apiId, apiHash, {
     connectionRetries: 5,
@@ -51,6 +51,6 @@ async function handleMessage(event) {
 }
 
 // Start the client
-init().catch(console.error);
+initBot().catch(console.error);
 initExpress();
 initAuth(supabase);
