@@ -54,3 +54,7 @@ async function handleMessage(event) {
 initBot().catch(console.error);
 initExpress();
 initAuth(supabase);
+
+process.on("SIGINT", () => {
+  process.exit();
+});
