@@ -42,10 +42,6 @@ async function handleMessage(event) {
     return;
   }
 
-  // if (!/(To'lov|Naqd pul yechish|To'ldirish|Amaliyot)/.test(message.text)) {
-  //   return;
-  // }
-
   const transfer = moneyTransferInfo(message.text);
   addData(transfer, supabase);
 }

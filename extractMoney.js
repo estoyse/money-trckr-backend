@@ -15,11 +15,20 @@ const parseDateTime = dateStr => {
   const cleanStr = dateStr.replace(/🕓\s+/, "");
   const [time, dateWithDots] = cleanStr.split(" ");
   const [day, month, year] = dateWithDots.split(".");
-  const formattedDate = `${year}-${month.padStart(2, "0")}-${day.padStart(
-    2,
-    "0"
-  )} ${time}`;
-  return new Date(formattedDate);
+  const [hours, minutes] = time.split(":");
+
+  // Create date in UTC
+  const date = new Date(
+    Date.UTC(
+      parseInt(year),
+      parseInt(month) - 1, // months are 0-based in JavaScript
+      parseInt(day),
+      parseInt(hours) - 5, // adjust for GMT+5
+      parseInt(minutes)
+    )
+  );
+
+  return date;
 };
 
 const operationType = str => {
@@ -30,13 +39,13 @@ const operationType = str => {
 };
 
 export function moneyTransferInfo(msg) {
-  const [transferType, amount, location, cardDetails, date, balance] =
-    msg.split("\n");
+  const [transferType, amount, location, cardDetails, date] = msg.split("\n");
 
   return {
     type: operationType(transferType),
     amount: toNumber(amount),
     location: clearText(location),
     transaction_date: parseDateTime(date),
+    account: clearText(cardDetails),
   };
 }
