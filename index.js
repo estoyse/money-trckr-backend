@@ -1,7 +1,7 @@
+import { createClient } from "@supabase/supabase-js";
 import { TelegramClient } from "telegram";
 import { StringSession } from "telegram/sessions/index.js";
 import { NewMessage } from "telegram/events/index.js";
-import { moneyTransferInfo } from "./extractMoney.js";
 import {
   TELEGRAM_API_HASH,
   TELEGRAM_API_ID,
@@ -9,21 +9,19 @@ import {
   SUPABASE_URL,
   SUPABASE_SERVICE_ROLE_KEY,
 } from "./config.js";
-import { addData } from "./addData.js";
-import { createClient } from "@supabase/supabase-js";
+import initAuth from "./supabaseAuth.js";
 import initExpress from "./express.js";
-import initAuth from "./auth.js";
+import { handleHumo } from "./handleTransaction.js";
+import { commentOnChannelPost } from "./commentOnChannelPost.js";
 
 const apiId = +TELEGRAM_API_ID;
 const apiHash = TELEGRAM_API_HASH;
 const stringSession = new StringSession(TELEGRAM_STRING_SESSION);
-
+const client = new TelegramClient(stringSession, apiId, apiHash, {
+  connectionRetries: 5,
+});
 async function initBot() {
-  // Create the client
-  const client = new TelegramClient(stringSession, apiId, apiHash, {
-    connectionRetries: 5,
-  });
-  client.start();
+  await client.start();
 
   console.log("Client is ready!");
   client.addEventHandler(handleMessage, new NewMessage({}));
@@ -31,19 +29,22 @@ async function initBot() {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-// Message handler function
 async function handleMessage(event) {
-  const message = event.message;
+  // if (event.isGroup) return;
 
-  if (
-    message.senderId.value !== 856254490n ||
-    !/(To'lov|Naqd pul yechish|To'ldirish|Amaliyot)/.test(message.text)
-  ) {
+  if (event.isPrivate) {
+    handleHumo(event.message, supabase);
     return;
   }
-
-  const transfer = moneyTransferInfo(message.text);
-  addData(transfer, supabase);
+  if (event.isChannel && event.message.post) {
+    const { message } = event;
+    if (
+      message.peerId.channelId.value !== 2139523610n ||
+      !message.replies?.channelId
+    )
+      return;
+    commentOnChannelPost(client, message);
+  }
 }
 
 // Start the client
