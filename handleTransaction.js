@@ -1,4 +1,5 @@
 import { moneyTransferInfo } from "./extractMoney.js";
+import { addData } from "./addData.js";
 export async function handleHumo(message, supabase) {
   if (
     message.senderId.value !== 856254490n ||
